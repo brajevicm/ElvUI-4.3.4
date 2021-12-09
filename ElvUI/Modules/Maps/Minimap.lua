@@ -519,6 +519,12 @@ function M:Initialize()
 		MiniMapBattlefieldBorder
 	}
 
+	mmholder:SetBackdrop({
+		bgFile = [[Interface/AddOns/nAuras/Media/BackgroundFlat]],
+		edgeFile = [[Interface/Buttons/WHITE8X8]],
+    	edgeSize = 2});
+	mmholder:SetBackdropBorderColor(0, 0, 0, 1);
+
 	for _, frame in pairs(frames) do
 		frame:Kill()
 	end
