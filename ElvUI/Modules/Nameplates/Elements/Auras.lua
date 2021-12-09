@@ -157,11 +157,11 @@ function NP:SetAura(frame, guid, index, filter, isDebuff, visible)
 			button:Show()
 
 			if isDebuff then
-				local color = (debuffType and DebuffTypeColor[debuffType]) or DebuffTypeColor.none
+				button.icon:SetTexCoord(0.07, 0.93, 0.2, 0.8)
 				if E.BadDispels[spellID] and E.myclass ~= "WARLOCK" then
 					self:StyleFrameColor(button, 0.05, 0.85, 0.94)
 				else
-					self:StyleFrameColor(button, color.r * 0.6, color.g * 0.6, color.b * 0.6)
+					self:StyleFrameColor(button, 0, 0, 0)
 				end
 			end
 
@@ -176,7 +176,7 @@ function NP:SetAura(frame, guid, index, filter, isDebuff, visible)
 	end
 end
 
-function NP:Update_AurasPosition(frame, db)
+function NP:Update_AurasPosition(frame, db, isDebuff)
 	local size = db.size + db.spacing
 	local anchor = E.InversePoints[db.anchorPoint]
 	local growthx = (db.growthX == "LEFT" and -1) or 1
@@ -190,7 +190,12 @@ function NP:Update_AurasPosition(frame, db)
 		local col = (i - 1) % cols
 		local row = floor((i - 1) / cols)
 
-		button:SetSize(db.size, db.size)
+		if isDebuff then
+			button:SetSize(db.size, db.size * 0.75)
+		else
+			button:SetSize(db.size, db.size)
+		end
+
 		button:ClearAllPoints()
 		button:SetPoint(anchor, frame, anchor, col * size * growthx, row * size * growthy)
 
@@ -272,7 +277,7 @@ function NP:Update_Auras(frame)
 		buffs.visibleBuffs = NP:Update_AuraIcons(buffs, guid, buffs.filter or "HELPFUL", db.perrow * db.numrows)
 
 		if #buffs > buffs.anchoredIcons then
-			self:Update_AurasPosition(buffs, db)
+			self:Update_AurasPosition(buffs, db, false)
 
 			buffs.anchoredIcons = #buffs
 		end
@@ -284,7 +289,7 @@ function NP:Update_Auras(frame)
 		debuffs.visibleDebuffs = NP:Update_AuraIcons(debuffs, guid, debuffs.filter or "HARMFUL", db.perrow * db.numrows, true)
 
 		if #debuffs > debuffs.anchoredIcons then
-			self:Update_AurasPosition(debuffs, db)
+			self:Update_AurasPosition(debuffs, db, true)
 
 			debuffs.anchoredIcons = #debuffs
 		end
@@ -327,9 +332,9 @@ function NP:Construct_AuraIcon(parent, index)
 	local button = CreateFrame("StatusBar", "$parentButton"..index, parent)
 	NP:StyleFrame(button, true)
 
-	button:SetStatusBarTexture(E.media.blankTex)
-	button:SetStatusBarColor(0, 0, 0, 0)
-	button:SetOrientation("VERTICAL")
+	-- button:SetStatusBarTexture(E.media.blankTex)
+	-- button:SetStatusBarColor(0, 0, 0, 0)
+	-- button:SetOrientation("VERTICAL")
 
 	button.bg = button:CreateTexture()
 	button.bg:SetTexture(0, 0, 0, 0.5)
