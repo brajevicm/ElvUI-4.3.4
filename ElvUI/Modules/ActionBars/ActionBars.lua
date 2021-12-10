@@ -117,7 +117,15 @@ function AB:TrimIcon(button, masque)
 	if not button.icon then return end
 
 	local left, right, top, bottom = unpack(button.db and button.db.customCoords or E.TexCoords)
-	local changeRatio = button.db and not button.db.keepSizeRatio
+	local changeRatio = false
+
+	local parent = button:GetParent()
+	local actionBarPattern = 'ElvUI_Bar(%d+)'
+	local barId = string.match(parent:GetName(), actionBarPattern)
+
+	if barId then
+		changeRatio = not AB.db['bar'..barId].keepSizeRatio
+	end
 
 	if changeRatio then
 		local width, height = button:GetSize()
