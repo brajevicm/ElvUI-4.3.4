@@ -258,7 +258,7 @@ function LO:ToggleChatPanels()
 		RightChatToggleButton:Point("BOTTOMRIGHT", RightChatPanel, "BOTTOMRIGHT")
 		LO:ToggleChatTabPanels(true, true)
 	elseif panelBackdrop == "LEFT" then
-		LeftChatPanel.backdrop:Show()
+		LeftChatPanel.backdrop:Hide()
 		RightChatPanel.backdrop:Hide()
 		LeftChatDataPanel:Point("BOTTOMLEFT", LeftChatPanel, "BOTTOMLEFT", SIDE_BUTTON_SPACING + SIDE_BUTTON_WIDTH, SPACING)
 		LeftChatDataPanel:Point("TOPRIGHT", LeftChatPanel, "BOTTOMRIGHT", -SPACING, (SPACING + PANEL_HEIGHT))
