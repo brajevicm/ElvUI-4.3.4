@@ -45,6 +45,12 @@ local castEvents = {
 	["SPELL_AURA_APPLIED"] = true,
 }
 
+local spellAuraEvents = {
+	["SPELL_AURA_APPLIED"] = true ,
+	["SPELL_AURA_REFRESH"] = true,
+	["SPELL_AURA_APPLIED_DOSE"] = true,
+}
+
 local RaidIconCoordinate = {
 	[0] = {[0] = "STAR", [0.25] = "MOON"},
 	[0.25] = {[0] = "CIRCLE", [0.25] = "SQUARE"},
@@ -1080,7 +1086,7 @@ function NP:COMBAT_LOG_EVENT_UNFILTERED(
 	destRaidFlags,
 	...)
 	if sourceGUID == playerGUID and destGUID ~= playerGUID then
-		if subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH" then
+		if spellAuraEvents[subevent] then
 			local frame = self:SearchForFrameByFlags(destFlags, destGUID, destRaidFlags,  destName)
 
 			if frame then
@@ -1099,6 +1105,29 @@ function NP:COMBAT_LOG_EVENT_UNFILTERED(
 				frame.unit = sourceGUID
 				frame.guid = sourceGUID
 				self:Update_CastBar(frame, nil, frame.unit)
+			end
+		end
+	end
+
+	if (subevent == "SPELL_INTERRUPT" or subevent == "SPELL_PERIODIC_INTERRUPT") and destGUID and (sourceName and sourceName ~= "") then
+		local frame = NP:SearchNameplateByGUID(destGUID)
+
+		if frame and frame.CastBar then
+			local db = frame.UnitType and NP.db and NP.db.units and NP.db.units[frame.UnitType]
+
+			if db and db.castbar and db.castbar.enable and db.castbar.timeToHold > 0 and db.castbar.sourceInterrupt then
+				local sourceNameColored
+				if db.castbar.sourceInterruptClassColor then
+					local class = select(3, pcall(GetPlayerInfoByGUID, sourceGUID))
+					local classColor = class and E:ClassColor(class)
+					sourceNameColored = classColor.colorStr and strjoin("", "|c", classColor.colorStr, sourceName)
+				end
+
+				frame.CastBar.Name:SetFormattedText("%s > %s", INTERRUPTED, sourceNameColored or sourceName)
+
+				frame.CastBar.sourceInterrupt = true
+			else
+				frame.CastBar.sourceInterrupt = nil
 			end
 		end
 	end

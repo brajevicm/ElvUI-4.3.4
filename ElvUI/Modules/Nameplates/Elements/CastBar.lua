@@ -242,31 +242,6 @@ function NP:Update_CastBar(frame, event, unit)
 	NP:StyleFilterUpdate(frame, "FAKE_Casting")
 end
 
-function NP:COMBAT_LOG_EVENT_UNFILTERED(_, _, event, _, sourceGUID, sourceName, _, _, targetGUID)
-	if (event == "SPELL_INTERRUPT" or event == "SPELL_PERIODIC_INTERRUPT") and targetGUID and (sourceName and sourceName ~= "") then
-		local frame = NP:SearchNameplateByGUID(targetGUID)
-
-		if frame and frame.CastBar then
-			local db = frame.UnitType and NP.db and NP.db.units and NP.db.units[frame.UnitType]
-
-			if db and db.castbar and db.castbar.enable and db.castbar.timeToHold > 0 and db.castbar.sourceInterrupt then
-				local sourceNameColored
-				if db.castbar.sourceInterruptClassColor then
-					local class = select(3, pcall(GetPlayerInfoByGUID, sourceGUID))
-					local classColor = class and E:ClassColor(class)
-					sourceNameColored = classColor.colorStr and strjoin("", "|c", classColor.colorStr, sourceName)
-				end
-
-				frame.CastBar.Name:SetFormattedText("%s > %s", INTERRUPTED, sourceNameColored or sourceName)
-
-				frame.CastBar.sourceInterrupt = true
-			else
-				frame.CastBar.sourceInterrupt = nil
-			end
-		end
-	end
-end
-
 function NP:Configure_CastBarScale(frame, scale, noPlayAnimation)
 	if frame.currentScale == scale then return end
 
